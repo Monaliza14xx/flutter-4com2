@@ -13,34 +13,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.orange,
+        primarySwatch: Colors.blue,
       ),
       home: const MyHomePage(title: '4COM2 - APP'),
-    );
-  }
-}
-
-class ButtonAction extends StatelessWidget {
-  const ButtonAction(
-      {Key? key,
-      required this.btnOnPressed,
-      required this.tooltip,
-      required this.icon})
-      : super(key: key);
-
-  final Function() btnOnPressed;
-  final String tooltip;
-  final Icon icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: FloatingActionButton(
-        onPressed: btnOnPressed,
-        tooltip: tooltip,
-        child: icon,
-      ),
     );
   }
 }
@@ -51,6 +26,30 @@ class MyHomePage extends StatefulWidget {
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class CustomButton extends StatelessWidget {
+  const CustomButton(
+      {Key? key,
+      required this.btnFunc,
+      required this.btnColor,
+      required this.btnText})
+      : super(key: key);
+  final Function() btnFunc;
+  final Color btnColor;
+  final String btnText;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+        onPressed: btnFunc,
+        style: ElevatedButton.styleFrom(
+          primary: btnColor,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        ),
+        child: Text(btnText));
+  }
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -78,6 +77,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final urlIamge = _counter >= 10
+        ? 'https://x-playground.com/wp-content/uploads/2023/11/0_7c2b07f4-77e5-4d9d-9c2a-db7ac6e99011_900x.jpg'
+        : 'https://img4.dhresource.com/webp/m/0x0/f3/albu/km/o/18/928f8698-7b9b-437f-9ae2-4b1b10c1adb1.jpg';
+
     return Scaffold(
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
@@ -88,22 +91,9 @@ class _MyHomePageState extends State<MyHomePage> {
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Image.network(urlIamge),
             const Text(
               'ຈຳນວນ',
               style: TextStyle(fontSize: 20),
@@ -113,22 +103,29 @@ class _MyHomePageState extends State<MyHomePage> {
               style: const TextStyle(fontSize: 50, color: Colors.orange),
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                
-                ButtonAction(
-                    btnOnPressed: _incrementCounter,
-                    tooltip: 'Increment',
-                    icon: const Icon(Icons.add)),
-
-                const SizedBox(width: 10),
-
-                ButtonAction(
-                    btnOnPressed: _disincrementCounter,
-                    tooltip: 'Disincrement',
-                    icon: const Icon(Icons.remove)),
-              ],
-            ),
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  CustomButton(
+                    btnFunc: _incrementCounter,
+                    btnColor: Colors.green,
+                    btnText: "ເພີ່ມຄ່າ",
+                  ),
+                  CustomButton(
+                    btnFunc: _disincrementCounter,
+                    btnColor: Colors.red,
+                    btnText: "ລົບຄ່າ",
+                  ),
+                  CustomButton(
+                    btnFunc: _resetCounter,
+                    btnColor: Colors.blue,
+                    btnText: "ຄືນຄ່າ",
+                  ),
+                  CustomButton(
+                    btnFunc: _doubleCounter,
+                    btnColor: Colors.orange,
+                    btnText: "x2",
+                  ),
+                ]),
           ],
         ),
       ),
@@ -138,5 +135,11 @@ class _MyHomePageState extends State<MyHomePage> {
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  _doubleCounter() {
+    setState(() {
+      _counter = _counter * 2;
+    });
   }
 }
