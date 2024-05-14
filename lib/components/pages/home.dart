@@ -61,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Image.network(urlIamge),
             const Text(
               'ຈຳນວນ',
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(fontSize: 20, fontFamily: "NotoSansLaoLoop"),
             ),
             Text(
               '$_counter',

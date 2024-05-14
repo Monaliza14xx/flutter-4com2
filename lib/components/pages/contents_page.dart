@@ -39,7 +39,7 @@ class ContentsPage extends StatelessWidget {
                         children: [
                           Text(
                             item.title,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: "NotoSansLaoLoop"),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -157,7 +157,7 @@ class ArticleDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(article.title),
+        title: Text(article.title , style: const TextStyle(fontFamily: "NotoSansLaoLoop")),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -179,7 +179,7 @@ class ArticleDetailsPage extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               article.title,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, fontFamily: "NotoSansLaoLoop"),
             ),
             const SizedBox(height: 8),
             Text(

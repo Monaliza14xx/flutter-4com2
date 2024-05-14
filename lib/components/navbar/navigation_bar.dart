@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import '../pages/contents_page.dart';
 import '../pages/home.dart';
+import '../pages/profile_page.dart';
 
 class NavigationBarApp extends StatelessWidget {
   const NavigationBarApp({super.key});
@@ -83,18 +84,7 @@ class _NavigationExampleState extends State<NavigationExample> {
             ),
           ),
         ),
-        Card(
-          shadowColor: Colors.transparent,
-          margin: const EdgeInsets.all(8.0),
-          child: SizedBox.expand(
-            child: Center(
-              child: Text(
-                'Profile page',
-                style: theme.textTheme.titleLarge,
-              ),
-            ),
-          ),
-        ),
+        const ProfilePage(),
         
       ][currentPageIndex],
     );

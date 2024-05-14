@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
@@ -22,6 +21,9 @@ class CustomButton extends StatelessWidget {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         ),
-        child: Text(btnText));
+        child: Text(
+          btnText,
+          style: const TextStyle(fontFamily: "NotoSansLaoLoop"),
+        ));
   }
 }
