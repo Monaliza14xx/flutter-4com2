@@ -1,5 +1,7 @@
 import 'package:app4com2/components/button/custom_button.dart';
 import 'package:flutter/material.dart';
+import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
+import '../pages/contents_page.dart';
 import '../pages/home.dart';
 
 class NavigationBarApp extends StatelessWidget {
@@ -28,42 +30,47 @@ class _NavigationExampleState extends State<NavigationExample> {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     return Scaffold(
-      bottomNavigationBar: NavigationBar(
-        onDestinationSelected: (int index) {
-          setState(() {
-            currentPageIndex = index;
-          });
-        },
-        selectedIndex: currentPageIndex,
-        destinations: const <Widget>[
-          NavigationDestination(
-            selectedIcon: Icon(Icons.home),
-            icon: Icon(Icons.home_outlined),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.notifications),
-            icon: Icon(Icons.notifications_outlined),
-            label: 'Notifications',
-          ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.settings),
-            icon: Icon(Icons.settings_outlined),
-            label: 'Settings',
-          ),
-        ],
-      ),
+      bottomNavigationBar: SalomonBottomBar(
+          currentIndex: currentPageIndex,
+          onTap: (i) => setState(() => currentPageIndex = i),
+          items: [
+            /// Home
+            SalomonBottomBarItem(
+              icon: const Icon(Icons.home_outlined),
+              activeIcon: const Icon(Icons.home),
+              title: const Text("Home"),
+              selectedColor: Colors.blue,
+            ),
+
+            /// Likes
+            SalomonBottomBarItem(
+              icon: const Icon(Icons.library_books_outlined),
+              activeIcon: const Icon(Icons.library_books),
+              title: const Text("Contents"),
+              selectedColor: Colors.green,
+            ),
+
+            /// Search
+            SalomonBottomBarItem(
+              icon: const Icon(Icons.search_outlined),
+              activeIcon: const Icon(Icons.search),
+              title: const Text("Search"),
+              selectedColor: Colors.orange,
+            ),
+
+            /// Profile
+            SalomonBottomBarItem(
+              icon: const Icon(Icons.person_outline),
+              activeIcon: const Icon(Icons.person),
+              title: const Text("Profile"),
+              selectedColor: Colors.teal,
+            ),
+          ],
+        ),
       body: <Widget>[
         const MyHomePage(title: "HomePage"),
-        Card(
-          shadowColor: Colors.transparent,
-          margin: const EdgeInsets.all(8.0),
-          child: SizedBox.expand(
-            child: Center(
-                child: CustomButton(
-                    btnFunc: () {}, btnColor: Colors.red, btnText: "Click")),
-          ),
-        ),
+        const ContentsPage(),
+       
         Card(
           shadowColor: Colors.transparent,
           margin: const EdgeInsets.all(8.0),
@@ -76,6 +83,19 @@ class _NavigationExampleState extends State<NavigationExample> {
             ),
           ),
         ),
+        Card(
+          shadowColor: Colors.transparent,
+          margin: const EdgeInsets.all(8.0),
+          child: SizedBox.expand(
+            child: Center(
+              child: Text(
+                'Profile page',
+                style: theme.textTheme.titleLarge,
+              ),
+            ),
+          ),
+        ),
+        
       ][currentPageIndex],
     );
   }
