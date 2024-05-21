@@ -58,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Image.network(urlIamge),
+            Image.network(urlIamge, width: 200, height: 200),
             const Text(
               'ຈຳນວນ',
               style: TextStyle(fontSize: 20, fontFamily: "NotoSansLaoLoop"),

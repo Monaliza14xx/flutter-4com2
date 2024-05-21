@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'components/navbar/navigation_bar.dart';
+import 'components/pages/signIn.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +16,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const NavigationBarApp(),
+      // home: const NavigationBarApp(),
+      initialRoute: '/singIn',
+      routes: {
+        '/': (context) => const NavigationBarApp(),
+        '/singIn': (context) => const SignInPage(),
+      },
     );
   }
 }

@@ -1,9 +1,9 @@
-import 'package:app4com2/components/button/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import '../pages/contents_page.dart';
 import '../pages/home.dart';
 import '../pages/profile_page.dart';
+import '../pages/settings_page.dart';
 
 class NavigationBarApp extends StatelessWidget {
   const NavigationBarApp({super.key});
@@ -43,7 +43,6 @@ class _NavigationExampleState extends State<NavigationExample> {
               selectedColor: Colors.blue,
             ),
 
-            /// Likes
             SalomonBottomBarItem(
               icon: const Icon(Icons.library_books_outlined),
               activeIcon: const Icon(Icons.library_books),
@@ -51,41 +50,27 @@ class _NavigationExampleState extends State<NavigationExample> {
               selectedColor: Colors.green,
             ),
 
-            /// Search
-            SalomonBottomBarItem(
-              icon: const Icon(Icons.search_outlined),
-              activeIcon: const Icon(Icons.search),
-              title: const Text("Search"),
-              selectedColor: Colors.orange,
-            ),
-
-            /// Profile
             SalomonBottomBarItem(
               icon: const Icon(Icons.person_outline),
               activeIcon: const Icon(Icons.person),
               title: const Text("Profile"),
               selectedColor: Colors.teal,
             ),
+            
+            SalomonBottomBarItem(
+              icon: const Icon(Icons.settings_outlined),
+              activeIcon: const Icon(Icons.settings),
+              title: const Text("Settings"),
+              selectedColor: Colors.orange,
+            ),
           ],
         ),
       body: <Widget>[
         const MyHomePage(title: "HomePage"),
         const ContentsPage(),
-       
-        Card(
-          shadowColor: Colors.transparent,
-          margin: const EdgeInsets.all(8.0),
-          child: SizedBox.expand(
-            child: Center(
-              child: Text(
-                'Settings page',
-                style: theme.textTheme.titleLarge,
-              ),
-            ),
-          ),
-        ),
         const ProfilePage(),
-        
+        const SettingsPage(),
+
       ][currentPageIndex],
     );
   }
