@@ -1,3 +1,4 @@
+import 'package:app4com2/components/pages/second_page.dart';
 import 'package:flutter/material.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import '../pages/contents_page.dart';
@@ -13,6 +14,10 @@ class NavigationBarApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(useMaterial3: true),
       home: const NavigationExample(),
+      routes: {
+        // '/': (context) => const NavigationBarApp(),
+        '/secondPage': (context) => const SecondPage(),
+      },
     );
   }
 }

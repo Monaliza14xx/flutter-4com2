@@ -1,6 +1,9 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../button/custom_button.dart';
-import 'second_page.dart';
+import 'package:http/http.dart' as http;
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -12,6 +15,25 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  String _title = "Initial Title";
+  late String data = '';
+
+  void mapData(value) {
+    setState(() {
+      data = value;
+    });
+  }
+
+  void getData() async {
+    var url = Uri.parse('https://sheetdb.io/api/v1/4q5fhwwuonqmj');
+    http.Response res = await http.get(url);
+    if (res.statusCode == 200) {
+      mapData(jsonDecode(utf8.decode(res.bodyBytes)).toString());
+      print(data);
+    } else {
+      print('Failed to fetch data');
+    }
+  }
 
   void _incrementCounter() {
     setState(() {
@@ -34,10 +56,15 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _goToSecondPage() {
-    Navigator.push(
-      context, 
-      MaterialPageRoute(builder: (context) => const SecondPage()),
-    );
+    Navigator.pushNamed(context, '/secondPage',
+            arguments: {"title": "Second Page", "value": _counter})
+        .then((value) => reciveContext(value));
+  }
+
+  void reciveContext(value) {
+    setState(() {
+      _title = value;
+    });
   }
 
   @override
@@ -58,6 +85,8 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Text(_title, style: const TextStyle(fontSize: 20)),
+            const SizedBox(height: 20),
             Image.network(urlIamge, width: 200, height: 200),
             const Text(
               'ຈຳນວນ',
@@ -95,7 +124,13 @@ class _MyHomePageState extends State<MyHomePage> {
               btnFunc: _goToSecondPage,
               btnColor: Colors.cyan,
               btnText: "Go to second page",
-            )
+            ),
+            CustomButton(
+              btnFunc: getData,
+              btnColor: Colors.green,
+              btnText: "Fetch Data",
+            ),
+            Text(data),
           ],
         ),
       ),
