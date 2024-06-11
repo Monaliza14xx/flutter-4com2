@@ -1,7 +1,6 @@
 import 'dart:convert';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import '../../model/student.dart';
 import '../button/custom_button.dart';
 import 'package:http/http.dart' as http;
 
@@ -14,13 +13,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  String _title = "Initial Title";
-  late String data = '';
+  List<Student> data = [];
 
-  void mapData(value) {
+  void mapData(List<dynamic> value) {
     setState(() {
-      data = value;
+      data = value.map((json) => Student.fromJson(json)).toList();
     });
   }
 
@@ -28,118 +25,268 @@ class _MyHomePageState extends State<MyHomePage> {
     var url = Uri.parse('https://sheetdb.io/api/v1/4q5fhwwuonqmj');
     http.Response res = await http.get(url);
     if (res.statusCode == 200) {
-      mapData(jsonDecode(utf8.decode(res.bodyBytes)).toString());
+      mapData(jsonDecode(utf8.decode(res.bodyBytes)));
       print(data);
     } else {
       print('Failed to fetch data');
     }
   }
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  int getNextId() {
+    if (data.isEmpty) {
+      return 1; // Start with ID 1 if data is empty
+    }
+    int highestId = data.map((student) => int.parse(student.id)).reduce((a, b) => a > b ? a : b);
+    return highestId + 1;
   }
 
-  void _disincrementCounter() {
-    setState(() {
-      if (_counter > 0) {
-        _counter--;
-      }
-    });
+  Future<void> sendDataToServer(Student student) async {
+    var url = Uri.parse('https://sheetdb.io/api/v1/4q5fhwwuonqmj');
+    var response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        'id': student.id,
+        'std_id': student.stdId,
+        'name': student.name,
+        'surname': student.surname,
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      print('Data sent to server successfully');
+    } else {
+      print('Failed to send data to server');
+    }
   }
 
-  void _resetCounter() {
-    setState(() {
-      _counter = 0;
-    });
+  Future<void> updateDataOnServer(Student student) async {
+    var url = Uri.parse('https://sheetdb.io/api/v1/4q5fhwwuonqmj/id/${student.id}');
+    var response = await http.put(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        'std_id': student.stdId,
+        'name': student.name,
+        'surname': student.surname,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print('Data updated successfully on server');
+    } else {
+      print('Failed to update data on server');
+    }
   }
 
-  void _goToSecondPage() {
-    Navigator.pushNamed(context, '/secondPage',
-            arguments: {"title": "Second Page", "value": _counter})
-        .then((value) => reciveContext(value));
+  Future<void> deleteDataFromServer(String id) async {
+    var url = Uri.parse('https://sheetdb.io/api/v1/4q5fhwwuonqmj/id/$id');
+    var response = await http.delete(url);
+
+    if (response.statusCode == 200) {
+      print('Data deleted successfully from server');
+    } else {
+      print('Failed to delete data from server');
+    }
   }
 
-  void reciveContext(value) {
-    setState(() {
-      _title = value;
-    });
+  void addData() {
+    TextEditingController stdIdController = TextEditingController();
+    TextEditingController nameController = TextEditingController();
+    TextEditingController surnameController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Add Student'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: stdIdController,
+                decoration: InputDecoration(labelText: 'Student ID'),
+              ),
+              TextField(
+                controller: nameController,
+                decoration: InputDecoration(labelText: 'Name'),
+              ),
+              TextField(
+                controller: surnameController,
+                decoration: InputDecoration(labelText: 'Surname'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                var newStudent = Student(
+                  id: getNextId().toString(),
+                  stdId: stdIdController.text,
+                  name: nameController.text,
+                  surname: surnameController.text,
+                );
+
+                setState(() {
+                  data.add(newStudent);
+                });
+
+                await sendDataToServer(newStudent);
+
+                Navigator.of(context).pop();
+              },
+              child: Text('Add'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void editData(Student student) {
+    TextEditingController stdIdController = TextEditingController(text: student.stdId);
+    TextEditingController nameController = TextEditingController(text: student.name);
+    TextEditingController surnameController = TextEditingController(text: student.surname);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Edit Student'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: stdIdController,
+                decoration: InputDecoration(labelText: 'Student ID'),
+              ),
+              TextField(
+                controller: nameController,
+                decoration: InputDecoration(labelText: 'Name'),
+              ),
+              TextField(
+                controller: surnameController,
+                decoration: InputDecoration(labelText: 'Surname'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                setState(() {
+                  student.stdId = stdIdController.text;
+                  student.name = nameController.text;
+                  student.surname = surnameController.text;
+                });
+
+                await updateDataOnServer(student);
+
+                Navigator.of(context).pop();
+              },
+              child: Text('Update'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void confirmDelete(Student student) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Confirm Delete'),
+          content: Text('Are you sure you want to delete ${student.name} ${student.surname}?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                setState(() {
+                  data.remove(student);
+                });
+
+                await deleteDataFromServer(student.id);
+
+                Navigator.of(context).pop();
+              },
+              child: Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final urlIamge = _counter >= 10
-        ? 'https://x-playground.com/wp-content/uploads/2023/11/0_7c2b07f4-77e5-4d9d-9c2a-db7ac6e99011_900x.jpg'
-        : 'https://img4.dhresource.com/webp/m/0x0/f3/albu/km/o/18/928f8698-7b9b-437f-9ae2-4b1b10c1adb1.jpg';
-
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(_title, style: const TextStyle(fontSize: 20)),
-            const SizedBox(height: 20),
-            Image.network(urlIamge, width: 200, height: 200),
-            const Text(
-              'ຈຳນວນ',
-              style: TextStyle(fontSize: 20, fontFamily: "NotoSansLaoLoop"),
-            ),
-            Text(
-              '$_counter',
-              style: const TextStyle(fontSize: 50, color: Colors.orange),
-            ),
-            Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  CustomButton(
-                    btnFunc: _incrementCounter,
-                    btnColor: Colors.green,
-                    btnText: "ເພີ່ມຄ່າ",
-                  ),
-                  CustomButton(
-                    btnFunc: _disincrementCounter,
-                    btnColor: Colors.red,
-                    btnText: "ລົບຄ່າ",
-                  ),
-                  CustomButton(
-                    btnFunc: _resetCounter,
-                    btnColor: Colors.blue,
-                    btnText: "ຄືນຄ່າ",
-                  ),
-                  CustomButton(
-                    btnFunc: _doubleCounter,
-                    btnColor: Colors.orange,
-                    btnText: "x2",
-                  ),
-                ]),
-            CustomButton(
-              btnFunc: _goToSecondPage,
-              btnColor: Colors.cyan,
-              btnText: "Go to second page",
-            ),
             CustomButton(
               btnFunc: getData,
               btnColor: Colors.green,
               btnText: "Fetch Data",
             ),
-            Text(data),
+            Expanded(
+              child: ListView.builder(
+                itemCount: data.length,
+                itemBuilder: (context, index) {
+                  var item = data[index];
+                  return Card(
+                    margin: EdgeInsets.all(10.0),
+                    child: ListTile(
+                      contentPadding: EdgeInsets.all(10.0),
+                      title: Text('${item.name} ${item.surname}'),
+                      subtitle: Text('ID: ${item.stdId}'),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.edit),
+                            onPressed: () => editData(item),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () => confirmDelete(item),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: addData,
+        tooltip: 'Add Student',
+        child: Icon(Icons.add),
+      ),
     );
-  }
-
-  _doubleCounter() {
-    setState(() {
-      _counter = _counter * 2;
-    });
   }
 }
